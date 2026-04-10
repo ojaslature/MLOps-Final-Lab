@@ -8,6 +8,7 @@ from fastapi.security.api_key import APIKeyHeader
 from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel
 from starlette.status import HTTP_403_FORBIDDEN
+from fastapi.middleware.cors import CORSMiddleware
 
 # ---------------------------------------------------------
 # 1. LOGGING SETUP (Expt 3)
@@ -23,7 +24,21 @@ logging.basicConfig(
 logger = logging.getLogger("mlops-api")
 
 # ---------------------------------------------------------
-# 2. AUTHENTICATION CONFIG (Expt 4)
+# 2. APP INITIALIZATION & CORS (Expt 9 Fix)
+# ---------------------------------------------------------
+app = FastAPI(title="Iris MLOps API - Versioned")
+
+# This allows your Streamlit dashboard (localhost) to talk to AWS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ---------------------------------------------------------
+# 3. AUTHENTICATION CONFIG (Expt 4)
 # ---------------------------------------------------------
 API_KEY = "my_super_secret_mlops_key"
 API_KEY_NAME = "access_token"
@@ -37,11 +52,8 @@ async def get_api_key(header_value: str = Security(api_key_header)):
     )
 
 # ---------------------------------------------------------
-# 3. APP & MULTI-MODEL LOADING (Expt 7)
+# 4. MULTI-MODEL LOADING (Expt 7)
 # ---------------------------------------------------------
-app = FastAPI(title="Iris MLOps API - Versioned")
-
-# Load V1 and V2 (Assuming you duplicated model.pkl as model_v2.pkl)
 try:
     with open("models/model.pkl", "rb") as f:
         model_v1 = pickle.load(f)
@@ -61,7 +73,7 @@ class IrisRequest(BaseModel):
     petal_width: float
 
 # ---------------------------------------------------------
-# 4. ERROR HANDLERS & MIDDLEWARE (Expt 3)
+# 5. REQUEST LOGGING MIDDLEWARE (Expt 3)
 # ---------------------------------------------------------
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
@@ -76,7 +88,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     return JSONResponse(status_code=422, content={"message": "Invalid input type"})
 
 # ---------------------------------------------------------
-# 5. VERSIONED PREDICT ENDPOINT (Expt 7)
+# 6. VERSIONED PREDICT ENDPOINT (Expt 7)
 # ---------------------------------------------------------
 @app.post("/predict/{version}")
 async def predict(version: str, data: IrisRequest, api_key: str = Depends(get_api_key)):
@@ -104,14 +116,3 @@ async def predict(version: str, data: IrisRequest, api_key: str = Depends(get_ap
         "prediction": prediction, 
         "species": target_names[prediction]
     }
-    from fastapi.middleware.cors import CORSMiddleware
-
-# ... after your app = FastAPI() line ...
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # This allows your Streamlit app to connect
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
