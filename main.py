@@ -104,3 +104,14 @@ async def predict(version: str, data: IrisRequest, api_key: str = Depends(get_ap
         "prediction": prediction, 
         "species": target_names[prediction]
     }
+    from fastapi.middleware.cors import CORSMiddleware
+
+# ... after your app = FastAPI() line ...
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # This allows your Streamlit app to connect
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
