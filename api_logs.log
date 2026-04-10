@@ -1,0 +1,36 @@
+2026-04-08 01:25:22,897 - mlops_logger - INFO - --- Logger Initialized Successfully ---
+2026-04-08 01:28:06,379 - mlops-api - INFO - Successfully loaded model and scaler artifacts.
+2026-04-08 01:28:26,162 - mlops-api - INFO - Successfully loaded model and scaler artifacts.
+2026-04-08 01:29:45,727 - mlops-api - INFO - Incoming Request: GET http://127.0.0.1:8000/docs
+2026-04-08 01:29:45,729 - mlops-api - INFO - Finished Request: Status 200
+2026-04-08 01:29:46,208 - mlops-api - INFO - Incoming Request: GET http://127.0.0.1:8000/openapi.json
+2026-04-08 01:29:46,237 - mlops-api - INFO - Finished Request: Status 200
+2026-04-08 01:30:04,616 - mlops-api - INFO - Incoming Request: POST http://127.0.0.1:8000/predict
+2026-04-08 01:30:04,630 - mlops-api - INFO - Prediction made: setosa (Class 0)
+2026-04-08 01:30:04,630 - mlops-api - INFO - Finished Request: Status 200
+2026-04-08 01:31:21,894 - mlops-api - INFO - Incoming Request: POST http://127.0.0.1:8000/predict
+2026-04-08 01:31:21,896 - mlops-api - INFO - Finished Request: Status 422
+2026-04-08 01:34:19,002 - mlops-api - INFO - Successfully loaded model and scaler artifacts.
+2026-04-08 01:35:35,189 - mlops-api - INFO - Successfully loaded model and scaler artifacts.
+2026-04-08 01:35:51,808 - mlops-api - INFO - Successfully loaded model and scaler artifacts.
+2026-04-08 01:36:22,426 - mlops-api - INFO - Incoming Request: POST http://127.0.0.1:8000/predict
+2026-04-08 01:36:22,428 - mlops-api - ERROR - Validation Error: [{'type': 'float_parsing', 'loc': ('body', 'sepal_length'), 'msg': 'Input should be a valid number, unable to parse string as a number', 'input': 'helllo'}]
+2026-04-08 01:36:22,428 - mlops-api - INFO - Finished Request: Status 422
+2026-04-08 01:42:33,626 - mlops-api - INFO - Incoming Request: POST http://127.0.0.1:8000/predict
+2026-04-08 01:42:33,628 - mlops-api - INFO - Finished Request: Status 403
+2026-04-08 01:42:34,834 - mlops-api - INFO - Incoming Request: POST http://127.0.0.1:8000/predict
+2026-04-08 01:42:34,835 - mlops-api - INFO - Finished Request: Status 403
+2026-04-08 01:45:08,294 - mlops-api - INFO - Incoming Request: GET http://127.0.0.1:8000/docs
+2026-04-08 01:45:08,295 - mlops-api - INFO - Finished Request: Status 200
+2026-04-08 01:45:08,687 - mlops-api - INFO - Incoming Request: GET http://127.0.0.1:8000/openapi.json
+2026-04-08 01:45:08,702 - mlops-api - INFO - Finished Request: Status 200
+2026-04-08 01:47:51,071 - mlops-api - INFO - Incoming Request: POST http://127.0.0.1:8000/predict
+2026-04-08 01:47:51,087 - mlops-api - INFO - Auth successful. Prediction: setosa
+2026-04-08 01:47:51,087 - mlops-api - INFO - Finished Request: Status 200
+2026-04-08 01:48:08,968 - mlops-api - INFO - Incoming Request: GET http://127.0.0.1:8000/docs
+2026-04-08 01:48:08,968 - mlops-api - INFO - Finished Request: Status 200
+2026-04-08 01:48:09,083 - mlops-api - INFO - Incoming Request: GET http://127.0.0.1:8000/openapi.json
+2026-04-08 01:48:09,086 - mlops-api - INFO - Finished Request: Status 200
+2026-04-08 01:48:21,183 - mlops-api - INFO - Incoming Request: POST http://127.0.0.1:8000/predict
+2026-04-08 01:48:21,185 - mlops-api - INFO - Finished Request: Status 403
+2026-04-08 12:16:17,520 - mlops-api - INFO - Models V1, V2 and Scaler loaded successfully.
