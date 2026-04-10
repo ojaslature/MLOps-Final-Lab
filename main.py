@@ -25,7 +25,7 @@ logging.basicConfig(
 logger = logging.getLogger("mlops-api")
 
 # ---------------------------------------------------------
-# 2. APP INITIALIZATION & CORS (Expt 9)
+# 2. APP INITIALIZATION & CORS (Expt 9 & 10 Fix)
 # ---------------------------------------------------------
 app = FastAPI(title="Iris MLOps API - Experiment 10")
 
@@ -35,6 +35,8 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    # CRITICAL: This allows the browser to see the latency header
+    expose_headers=["X-Response-Time"] 
 )
 
 # ---------------------------------------------------------
@@ -86,7 +88,7 @@ async def monitor_performance(request: Request, call_next):
     process_time = time.time() - start_time  # Calculate latency
     logger.info(f"Finished Request: Status {response.status_code} | Latency: {process_time:.4f}s")
     
-    # Send the latency back in the header so the Streamlit dashboard can display it
+    # Send the latency back in the header
     response.headers["X-Response-Time"] = str(process_time)
     return response
 
@@ -123,5 +125,5 @@ async def predict(version: str, data: IrisRequest, api_key: str = Depends(get_ap
         "model_version": version,
         "prediction": prediction, 
         "species": target_names[prediction],
-        "timestamp": time.time() # Added for monitoring history
+        "timestamp": time.time()
     }
