@@ -1,6 +1,7 @@
 import logging
 import sys
 import pickle
+import time  # Added for latency tracking
 import numpy as np
 from fastapi import FastAPI, Request, HTTPException, Security, Depends
 from fastapi.responses import JSONResponse
@@ -11,7 +12,7 @@ from starlette.status import HTTP_403_FORBIDDEN
 from fastapi.middleware.cors import CORSMiddleware
 
 # ---------------------------------------------------------
-# 1. LOGGING SETUP (Expt 3)
+# 1. LOGGING SETUP (Expt 3 & 10)
 # ---------------------------------------------------------
 logging.basicConfig(
     level=logging.INFO,
@@ -24,11 +25,10 @@ logging.basicConfig(
 logger = logging.getLogger("mlops-api")
 
 # ---------------------------------------------------------
-# 2. APP INITIALIZATION & CORS (Expt 9 Fix)
+# 2. APP INITIALIZATION & CORS (Expt 9)
 # ---------------------------------------------------------
-app = FastAPI(title="Iris MLOps API - Versioned")
+app = FastAPI(title="Iris MLOps API - Experiment 10")
 
-# This allows your Streamlit dashboard (localhost) to talk to AWS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -73,13 +73,21 @@ class IrisRequest(BaseModel):
     petal_width: float
 
 # ---------------------------------------------------------
-# 5. REQUEST LOGGING MIDDLEWARE (Expt 3)
+# 5. MONITORING MIDDLEWARE (Expt 10)
 # ---------------------------------------------------------
 @app.middleware("http")
-async def log_requests(request: Request, call_next):
+async def monitor_performance(request: Request, call_next):
+    start_time = time.time()  # Start timing
+    
     logger.info(f"Incoming Request: {request.method} {request.url}")
+    
     response = await call_next(request)
-    logger.info(f"Finished Request: Status {response.status_code}")
+    
+    process_time = time.time() - start_time  # Calculate latency
+    logger.info(f"Finished Request: Status {response.status_code} | Latency: {process_time:.4f}s")
+    
+    # Send the latency back in the header so the Streamlit dashboard can display it
+    response.headers["X-Response-Time"] = str(process_time)
     return response
 
 @app.exception_handler(RequestValidationError)
@@ -92,7 +100,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 # ---------------------------------------------------------
 @app.post("/predict/{version}")
 async def predict(version: str, data: IrisRequest, api_key: str = Depends(get_api_key)):
-    # Version routing logic
+    # Model Version Routing
     if version == "v1":
         active_model = model_v1
     elif version == "v2":
@@ -109,10 +117,11 @@ async def predict(version: str, data: IrisRequest, api_key: str = Depends(get_ap
     prediction = int(active_model.predict(scaled_data)[0])
     target_names = ['setosa', 'versicolor', 'virginica']
     
-    logger.info(f"Auth successful. Version: {version}. Prediction: {target_names[prediction]}")
+    logger.info(f"Prediction: {target_names[prediction]} (Version: {version})")
     
     return {
         "model_version": version,
         "prediction": prediction, 
-        "species": target_names[prediction]
+        "species": target_names[prediction],
+        "timestamp": time.time() # Added for monitoring history
     }
